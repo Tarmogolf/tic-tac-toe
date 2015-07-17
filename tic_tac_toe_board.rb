@@ -7,8 +7,11 @@ class TicTacToeBoard
 	end
 
 	def reset_board
-		9.times do 
-			@ttt_state.push("_")
+		i = 1
+		9.times do |i|
+			i+=1
+			@ttt_state.push(i)
+			
 		end
 	end
 
@@ -23,9 +26,6 @@ class TicTacToeBoard
 	end
 
 	def is_empty?(index)
-		@ttt_state[index] == "_"
+		(1..9) === @ttt_state[index]
 	end
-
-
-
 end

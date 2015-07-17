@@ -9,19 +9,29 @@ class TicTacToe
 		@game_board = TicTacToeBoard.new
 		@playerX = TicTacToePlayer.new("X")
 		@playerO = TicTacToePlayer.new("O")
-		
+		@active_player = @playerX
+		@inactive_player = @playerO		
 	end
 
-	def take_turn(player)
+	def place_marker(player)
 		puts "Player #{player.marker}, type an empty space to place your marker"
 		index = gets.chomp.to_i
 		
-		until(@game_board.is_empty?(index))
+		until((1..9) === index)
+			puts "Bad input. Type a number between 1 and 9"
+			index = gets.chomp.to_i
+		end
+
+		until(@game_board.is_empty?(index-1))
 			puts "That spot is already taken, enter another"
 			index = gets.chomp.to_i
 		end
 
-		@game_board.add_marker(player.marker, index)
+		@game_board.add_marker(player.marker, index-1)
+	end
+
+	def swap_active_player
+		@active_player,@inactive_player = @inactive_player, @active_player
 	end
 
 	def player_wins?(marker)
@@ -37,7 +47,10 @@ class TicTacToe
 	end
 
 	def tie?
-		!@game_board.ttt_state.include?("_")
+		(1..9).each do |x|
+			return false if @game_board.ttt_state.include?(x)
+		end
+		true
 	end
 
 	def show_board
@@ -47,28 +60,18 @@ class TicTacToe
 	def play_game
 		self.show_board
 		loop do
-			self.take_turn(playerX)
-			if player_wins?(playerX.marker)
-				puts "Player X wins!"
-				self.show_board
+			place_marker(@active_player)
+			self.show_board
+
+			if player_wins?(@active_player.marker)
+				puts "Player #{@active_player.marker} wins!"
 				break
 			elsif tie?
-				puts "It's a tie"
-				self.show_board
+				puts "it's a tie"
 				break
 			end
-			self.show_board
-			self.take_turn(playerO)
-			if player_wins?(playerO.marker)
-				puts "Player O wins!"
-				self.show_board
-				break
-			elsif tie?
-				puts "It's a tie"
-				self.show_board
-				break
-			end
-			self.show_board
+
+			swap_active_player
 		end
 	end
 end
